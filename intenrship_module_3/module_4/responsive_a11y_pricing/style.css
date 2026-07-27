@@ -1,0 +1,128 @@
+*{
+    margin: 0%;
+    padding: 0%;
+    font-family: 'Poppins',sans-serif;
+    box-sizing: border-box;
+}
+
+body{
+
+    background:var(--bg);
+    color:var(--text);
+    font-family:Arial,sans-serif;
+    padding:2rem;
+
+}
+header{
+     text-align:center;
+    margin-bottom:2rem;
+
+}
+.button{
+    cursor: pointer;
+    border: none;
+    padding: 0.8rem 1.2rem;
+    border-radius: 0.5rem;
+    background:var(--accent);
+    color:red;
+    font-size:1rem;
+
+}
+button:focus,
+a:focus,
+input:focus{
+
+    outline:3px solid #2563eb;
+    outline-offset:0.25rem;
+}
+.pricing-grid{
+
+    display:grid;
+    grid-template-columns:1fr;
+    gap:1.5rem;
+
+}
+
+.card{
+
+    background:var(--card);
+    padding:2rem;
+    border-radius:1rem;
+    text-align:center;
+
+}
+
+.price{
+
+    font-size:2rem;
+    margin:1rem 0;
+
+}
+
+.card ul{
+
+    list-style:none;
+    margin-bottom:1.5rem;
+
+}
+
+.card li{
+
+    margin:0.5rem 0;
+
+}
+
+@media(min-width:48rem){
+
+.pricing-grid{
+
+grid-template-columns:repeat(2,1fr);
+
+}
+
+}
+
+@media(min-width:64rem){
+
+.pricing-grid{
+
+grid-template-columns:repeat(3,1fr);
+
+}
+
+}
+.modal{
+
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.6);
+display:flex;
+justify-content:center;
+align-items:center;
+
+}
+
+.hidden{
+
+display:none;
+
+}
+
+.modal-content{
+
+background:white;
+padding:2rem;
+border-radius:1rem;
+width:90%;
+max-width:30rem;
+
+}
+
+@media(prefers-color-scheme:dark){
+
+.modal-content{
+
+background:#1f2937;
+color: aliceblue;
+}
+}
