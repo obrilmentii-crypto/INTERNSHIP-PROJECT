@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACCESIBLE PRICING</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+    <h1>Pricing Tecniques</h1>
+    <button
+    id="billingToggle"
+    role="switch"
+    aria-checked="false"
+    aria-label="Toggle between monthly and annual billing">
+    Monthly Billing
+    </button>
+</header>
+
+<main>
+    <main>
+
+<section class="pricing-grid">
+
+    <article class="card">
+        <h2>Starter</h2>
+        <p class="price" data-month="19" data-year="190">$19/mo</p>
+        <ul>
+            <li>5 Projects</li>
+            <li>Email Support</li>
+            <li>1 GB Storage</li>
+        </ul>
+
+        <button class="openModal" data-plan="Starter">
+            Get Started
+        </button>
+    </article>
+
+    <article class="card">
+        <h2>Pro</h2>
+        <p class="price" data-month="49" data-year="490">$49/mo</p>
+        <ul>
+            <li>Unlimited Projects</li>
+            <li>Priority Support</li>
+            <li>100 GB Storage</li>
+        </ul>
+
+        <button class="openModal" data-plan="Pro">
+            Get Started
+        </button>
+    </article>
+    <article class="card">
+        <h2>Enterprise</h2>
+        <p class="price" data-month="99" data-year="990">$99/mo</p>
+        <ul>
+            <li>Dedicated Manager</li>
+            <li>24/7 Support</li>
+            <li>Unlimited Storage</li>
+        </ul>
+
+        <button class="openModal" data-plan="Enterprise">
+            Get Started
+        </button>
+    </article>
+</section> 
+</main>
+
+<div
+id="modal"
+class="modal hidden"
+role="dialog"
+aria-modal="true"
+aria-labelledby="modal-title">
+
+<div class="modal-content">
+
+<h2 id="modal-title">Plan Details</h2>
+
+<p id="modalText"></p>
+
+<button id="closeModal">Close</button>
+
+</div>
+
+</div>
+<script src="app.js"></script>
+</body>
+</html>
