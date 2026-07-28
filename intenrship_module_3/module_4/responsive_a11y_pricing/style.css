@@ -1,3 +1,9 @@
+:root{
+    --bg: #d1cece;
+    --text: #1d2024;
+    --card: #fbf6f8;
+    --accent: #e37896;
+}
 *{
     margin: 0%;
     padding: 0%;
@@ -15,25 +21,25 @@ body{
 }
 header{
      text-align:center;
-    margin-bottom:2rem;
+    margin-bottom:1.8rem;
 
 }
-.button{
+button{
     cursor: pointer;
     border: none;
     padding: 0.8rem 1.2rem;
     border-radius: 0.5rem;
     background:var(--accent);
-    color:red;
+    color:rgb(244, 240, 240);
     font-size:1rem;
-
+    margin-top: 1.3rem;
 }
 button:focus,
 a:focus,
 input:focus{
 
-    outline:3px solid #2563eb;
-    outline-offset:0.25rem;
+    outline: 2px solid #2563eb;
+    outline-offset:0.1rem;
 }
 .pricing-grid{
 
@@ -46,12 +52,24 @@ input:focus{
 .card{
 
     background:var(--card);
-    padding:2rem;
-    border-radius:1rem;
+    padding:7rem;
+    border-radius:7rem;
     text-align:center;
 
 }
 
+.card:hover{
+    background: blue;
+    color: white;
+}
+
+.card.active{
+    background: #2563eb;
+    color: white;
+    transform: scale(1.08);
+    box-shadow: 0 1rem 2rem rgba(0,0,0,0.35);
+    z-index: 10;
+}
 .price{
 
     font-size:2rem;
@@ -61,8 +79,12 @@ input:focus{
 
 .card ul{
 
-    list-style:none;
-    margin-bottom:1.5rem;
+    list-style: circle;
+    font-size: large;
+    user-select: 3rem;
+    cursor: pointer;
+    position: relative;
+    margin-bottom:2rem;
 
 }
 
