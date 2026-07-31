@@ -1,0 +1,8 @@
+@import "tailwindcss";
+@layer base {
+  body {
+    background-color: #f8fafc; /* Elegant slate background tint */
+    color: #0f172a;            /* High-contrast charcoal font color */
+    font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+  }
+}
