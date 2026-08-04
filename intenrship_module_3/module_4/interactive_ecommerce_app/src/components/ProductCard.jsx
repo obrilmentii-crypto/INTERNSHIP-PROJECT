@@ -1,37 +1,54 @@
-import React, { useEffect, useState } from 'react';
-export default function ProductCard({Product,Oncliclk,onAddToCart}) {
-  return (
-    <div className="group flex flex-col justify-between rounded-2xl bg-white p-4 shadow-xs border border-slate-100 transition-all duration-300 hover:-translate-y-1 hover:shadow-md hover:border-slate-200">
-      <div 
-        onClick={onClick} 
-        className="mb-4 flex h-44 w-full cursor-pointer items-center justify-center bg-slate-50/70 rounded-xl p-4 transition group-hover:opacity-90"
-      >
-        <img 
-          src={product.image} 
-          alt={product.title} 
-          className="max-h-full max-w-full object-contain mix-blend-multiply transition-transform duration-300 group-hover:scale-102" 
-        />
-      </div>
-      <div className="flex-1 cursor-pointer" onClick={onClick}>
-        <span className="inline-block px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider text-blue-600 bg-blue-50 rounded-full capitalize">
-          {product.category}
-        </span>
-        <h3 className="mt-2 text-sm font-semibold text-slate-800 line-clamp-2 transition group-hover:text-blue-600" title={product.title}>
-          {product.title}
-        </h3>
-        <p className="mt-2 flex items-center gap-1 text-xs text-amber-500 font-bold">
-           ★{product.rating.rate} <span className="text-slate-400 font-normal">({product.rating.count} reviews)</span>
-        </p>
-      </div>
-      <div className="mt-4 flex items-center justify-between pt-3 border-t border-slate-50">
-        <span className="text-lg font-black text-slate-900">${product.price.toFixed(2)}</span>
-        <button 
-          onClick={(e) => { e.stopPropagation(); onAddToCart(product); }} 
-          className="rounded-xl bg-blue-600 px-4 py-2 text-xs font-bold text-white shadow-xs hover:bg-blue-700 transition active:scale-95"
-        >
-          Add To Cart
-        </button>
-      </div>
-    </div>
-  );
+
+function ProductCard({
+product,
+addToCart,
+openDetail
+}){
+
+
+return(
+
+<div className="card">
+
+
+<img src={product.image}/>
+
+
+<h3>
+{product.title}
+</h3>
+
+<p className="category">
+{product.category}
+</p>
+
+<p>
+${product.price}
+</p>
+
+<div class ="flex gap-3">
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fcb51d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-star-icon lucide-star"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/></svg>
+  <p>
+{product.rating.rate}
+</p>
+</div>
+
+<button onClick={()=>addToCart(product)}>
+Add To Cart
+</button>
+
+<span
+  className="details-link"
+  onClick={() => openDetail(product)}
+>
+  Details
+</span>
+</div>
+
+
+)
+
 }
+
+
+export default ProductCard;
