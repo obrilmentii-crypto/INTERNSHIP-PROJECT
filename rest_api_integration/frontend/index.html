@@ -4,31 +4,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bookmark Manager</title>
 
- <link rel="stylesheet" href="style.css">
+    <title>Bookmark Manager</title>
+
+    <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
     <h1>Bookmark Manager</h1>
 
-    <form id="form">
+    <form id="bookmarkForm">
 
         <input
-            id="title"
             type="text"
+            id="title"
             placeholder="Title"
         >
 
         <input
-            id="url"
             type="text"
+            id="url"
             placeholder="URL"
         >
 
         <input
-            id="category"
             type="text"
+            id="category"
             placeholder="Category"
         >
 
@@ -42,7 +44,7 @@
 
     <h2>My Bookmarks</h2>
 
-    <div id="bookmarks"></div>
+    <div id="bookmarksList"></div>
 
     <script src="app.js"></script>
 
