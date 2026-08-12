@@ -10,7 +10,8 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+    "https://bookmark-backend-pqlf.onrender.com"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -31,7 +32,7 @@ def home():
     return {"message": "Backend is connected to PostgreSQL"}
 
 
-@app.get("/api/v1/bookmarks")
+@app.get("https://bookmark-backend-pqlf.onrender.com/api/v1/bookmarks")
 def get_bookmarks():
     cursor = db.cursor()
 
@@ -55,7 +56,7 @@ def get_bookmarks():
     return bookmarks
 
 
-@app.post("/api/v1/bookmarks", status_code=201)
+@app.post("https://bookmark-backend-pqlf.onrender.com/api/v1/bookmarks", status_code=201)
 def create_bookmark(bookmark: dict):
 
     title = bookmark.get("title")
@@ -92,7 +93,7 @@ def create_bookmark(bookmark: dict):
     }
 
 
-@app.delete("/api/v1/bookmarks/{bookmark_id}")
+@app.delete("https://bookmark-backend-pqlf.onrender.com/api/v1/bookmarks/{bookmark_id}")
 def delete_bookmark(bookmark_id: int):
 
     cursor = db.cursor()

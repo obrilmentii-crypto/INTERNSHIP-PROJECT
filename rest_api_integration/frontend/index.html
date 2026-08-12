@@ -8,6 +8,17 @@
     <title>Bookmark Manager</title>
 
     <link rel="stylesheet" href="style.css">
+    <form id="bookmarkForm">
+    <input id="title" type="text" placeholder="Bookmark title" required>
+
+    <input id="url" type="url" placeholder="https://example.com" required>
+
+    <input id="category" type="text" placeholder="Category">
+
+    <button type="submit">Add Bookmark</button>
+</form>
+
+<div id="bookmarksContainer"></div>
 </head>
 
 <body>
