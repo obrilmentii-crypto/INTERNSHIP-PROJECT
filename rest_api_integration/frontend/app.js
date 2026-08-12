@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:5000/api/v1/bookmarks";
+fetch("https://bookmark-backend-pqlf.onrender.com/api/bookmarks")
 
 const form = document.getElementById("bookmarkForm");
 const titleInput = document.getElementById("title");
