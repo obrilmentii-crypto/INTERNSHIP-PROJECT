@@ -10,8 +10,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-    "https://bookmark-backend-pqlf.onrender.com"],
+    allow_origins=["*"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -29,23 +28,32 @@ print("PostgreSQL connection successful!")
 
 @app.get("/")
 def home():
-    return {"message": "Backend is connected to PostgreSQL"}
+    return {
+        "message": "Backend is connected to PostgreSQL"
+    }
 
 
-@app.get("https://bookmark-backend-pqlf.onrender.com/api/v1/bookmarks")
+@app.get("/api/v1/bookmarks")
 def get_bookmarks():
+
     cursor = db.cursor()
 
     cursor.execute(
-        "SELECT id, title, url, category FROM bookmarks ORDER BY id"
+        """
+        SELECT id, title, url, category
+        FROM bookmarks
+        ORDER BY id
+        """
     )
 
     rows = cursor.fetchall()
+
     cursor.close()
 
     bookmarks = []
 
     for row in rows:
+
         bookmarks.append({
             "id": row[0],
             "title": row[1],
@@ -56,7 +64,7 @@ def get_bookmarks():
     return bookmarks
 
 
-@app.post("https://bookmark-backend-pqlf.onrender.com/api/v1/bookmarks", status_code=201)
+@app.post("/api/v1/bookmarks", status_code=201)
 def create_bookmark(bookmark: dict):
 
     title = bookmark.get("title")
@@ -64,6 +72,7 @@ def create_bookmark(bookmark: dict):
     category = bookmark.get("category", "")
 
     if not title or not url:
+
         raise HTTPException(
             status_code=400,
             detail="Title and URL are required"
@@ -83,6 +92,7 @@ def create_bookmark(bookmark: dict):
     new_id = cursor.fetchone()[0]
 
     db.commit()
+
     cursor.close()
 
     return {
@@ -93,26 +103,33 @@ def create_bookmark(bookmark: dict):
     }
 
 
-@app.delete("https://bookmark-backend-pqlf.onrender.com/api/v1/bookmarks/{bookmark_id}")
+@app.delete("/api/v1/bookmarks/{bookmark_id}")
 def delete_bookmark(bookmark_id: int):
 
     cursor = db.cursor()
 
     cursor.execute(
-        "DELETE FROM bookmarks WHERE id = %s RETURNING id",
+        """
+        DELETE FROM bookmarks
+        WHERE id = %s
+        RETURNING id
+        """,
         (bookmark_id,)
     )
 
     deleted = cursor.fetchone()
 
     if deleted is None:
+
         cursor.close()
+
         raise HTTPException(
             status_code=404,
             detail="Bookmark not found"
         )
 
     db.commit()
+
     cursor.close()
 
     return {

@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,57 +7,52 @@
     <title>Bookmark Manager</title>
 
     <link rel="stylesheet" href="style.css">
-    <form id="bookmarkForm">
-    <input id="title" type="text" placeholder="Bookmark title" required>
-
-    <input id="url" type="url" placeholder="https://example.com" required>
-
-    <input id="category" type="text" placeholder="Category">
-
-    <button type="submit">Add Bookmark</button>
-</form>
-
-<div id="bookmarksContainer"></div>
 </head>
 
 <body>
 
-    <h1>Bookmark Manager</h1>
+    <div class="container">
 
-    <form id="bookmarkForm">
+        <h1>Bookmark Manager</h1>
 
-        <input
-            type="text"
-            id="title"
-            placeholder="Title"
-        >
+        <!-- ONE AND ONLY ONE FORM -->
+        <form id="bookmarkForm">
 
-        <input
-            type="text"
-            id="url"
-            placeholder="URL"
-        >
+            <input
+                type="text"
+                id="title"
+                placeholder="Title"
+                required
+            >
 
-        <input
-            type="text"
-            id="category"
-            placeholder="Category"
-        >
+            <input
+                type="url"
+                id="url"
+                placeholder="https://example.com"
+                required
+            >
 
-        <button type="submit">
-            Add Bookmark
-        </button>
+            <input
+                type="text"
+                id="category"
+                placeholder="Category"
+            >
 
-    </form>
+            <button type="submit">
+                Add Bookmark
+            </button>
 
-    <p id="message"></p>
+        </form>
 
-    <h2>My Bookmarks</h2>
+        <h2>My Bookmarks</h2>
 
-    <div id="bookmarksList"></div>
+        <div id="message"></div>
+
+        <div id="bookmarksContainer"></div>
+
+    </div>
 
     <script src="app.js"></script>
 
 </body>
-
 </html>
