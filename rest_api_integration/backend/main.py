@@ -6,7 +6,10 @@ import os
 
 app = FastAPI()
 
-# Allow your frontend to connect
+# =========================
+# CORS
+# =========================
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -24,7 +27,7 @@ def get_db_connection():
     database_url = os.getenv("DATABASE_URL")
 
     if not database_url:
-        raise Exception("DATABASE_URL is not set")
+        raise Exception("DATABASE_URL is missing")
 
     return psycopg2.connect(database_url)
 
@@ -34,29 +37,42 @@ def get_db_connection():
 # =========================
 
 def create_table():
+
     db = get_db_connection()
     cursor = db.cursor()
 
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS bookmarks (
-            id SERIAL PRIMARY KEY,
-            title VARCHAR(255) NOT NULL,
-            url TEXT NOT NULL,
-            category VARCHAR(100)
-        )
-    """)
+    try:
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS bookmarks (
+                id SERIAL PRIMARY KEY,
+                title VARCHAR(255) NOT NULL,
+                url TEXT NOT NULL,
+                category VARCHAR(100) DEFAULT ''
+            )
+        """)
 
-    db.commit()
-    cursor.close()
-    db.close()
+        db.commit()
+
+        print("Bookmarks table is ready.")
+
+    except Exception as e:
+
+        db.rollback()
+
+        print("Error creating bookmarks table:", e)
+
+    finally:
+
+        cursor.close()
+        db.close()
 
 
-# Create table when server starts
+# Create the table when the server starts
 create_table()
 
 
 # =========================
-# DATA MODEL
+# BOOKMARK MODEL
 # =========================
 
 class Bookmark(BaseModel):
@@ -71,6 +87,7 @@ class Bookmark(BaseModel):
 
 @app.get("/")
 def home():
+
     return {
         "message": "Bookmark Backend is running",
         "database": "PostgreSQL connected"
@@ -78,18 +95,19 @@ def home():
 
 
 # =========================
-# HEALTH CHECK
+# HEALTH
 # =========================
 
 @app.get("/health")
 def health():
+
     return {
         "status": "healthy"
     }
 
 
 # =========================
-# GET ALL BOOKMARKS
+# GET BOOKMARKS
 # =========================
 
 @app.get("/api/v1/bookmarks")
@@ -98,30 +116,46 @@ def get_bookmarks():
     db = get_db_connection()
     cursor = db.cursor()
 
-    cursor.execute("""
-        SELECT id, title, url, category
-        FROM bookmarks
-        ORDER BY id DESC
-    """)
+    try:
 
-    rows = cursor.fetchall()
+        cursor.execute("""
+            SELECT id, title, url, category
+            FROM bookmarks
+            ORDER BY id DESC
+        """)
 
-    cursor.close()
-    db.close()
+        rows = cursor.fetchall()
 
-    bookmarks = []
+        bookmarks = []
 
-    for row in rows:
-        bookmarks.append({
-            "id": row[0],
-            "title": row[1],
-            "url": row[2],
-            "category": row[3]
-        })
+        for row in rows:
 
-    return {
-        "bookmarks": bookmarks
-    }
+            bookmarks.append({
+                "id": row[0],
+                "title": row[1],
+                "url": row[2],
+                "category": row[3]
+            })
+
+        return {
+            "bookmarks": bookmarks
+        }
+
+    except Exception as e:
+
+        db.rollback()
+
+        print("Error getting bookmarks:", e)
+
+        raise HTTPException(
+            status_code=500,
+            detail="Database error while getting bookmarks"
+        )
+
+    finally:
+
+        cursor.close()
+        db.close()
 
 
 # =========================
@@ -132,12 +166,14 @@ def get_bookmarks():
 def add_bookmark(bookmark: Bookmark):
 
     if not bookmark.title.strip():
+
         raise HTTPException(
             status_code=400,
             detail="Title is required"
         )
 
     if not bookmark.url.strip():
+
         raise HTTPException(
             status_code=400,
             detail="URL is required"
@@ -146,29 +182,44 @@ def add_bookmark(bookmark: Bookmark):
     db = get_db_connection()
     cursor = db.cursor()
 
-    cursor.execute("""
-        INSERT INTO bookmarks (title, url, category)
-        VALUES (%s, %s, %s)
-        RETURNING id, title, url, category
-    """, (
-        bookmark.title,
-        bookmark.url,
-        bookmark.category
-    ))
+    try:
 
-    row = cursor.fetchone()
+        cursor.execute("""
+            INSERT INTO bookmarks (title, url, category)
+            VALUES (%s, %s, %s)
+            RETURNING id, title, url, category
+        """, (
+            bookmark.title.strip(),
+            bookmark.url.strip(),
+            bookmark.category.strip()
+        ))
 
-    db.commit()
+        row = cursor.fetchone()
 
-    cursor.close()
-    db.close()
+        db.commit()
 
-    return {
-        "id": row[0],
-        "title": row[1],
-        "url": row[2],
-        "category": row[3]
-    }
+        return {
+            "id": row[0],
+            "title": row[1],
+            "url": row[2],
+            "category": row[3]
+        }
+
+    except Exception as e:
+
+        db.rollback()
+
+        print("Error adding bookmark:", e)
+
+        raise HTTPException(
+            status_code=500,
+            detail="Database error while saving bookmark"
+        )
+
+    finally:
+
+        cursor.close()
+        db.close()
 
 
 # =========================
@@ -181,28 +232,51 @@ def delete_bookmark(bookmark_id: int):
     db = get_db_connection()
     cursor = db.cursor()
 
-    cursor.execute(
-        "DELETE FROM bookmarks WHERE id = %s RETURNING id",
-        (bookmark_id,)
-    )
+    try:
 
-    deleted = cursor.fetchone()
-
-    if not deleted:
-        cursor.close()
-        db.close()
-
-        raise HTTPException(
-            status_code=404,
-            detail="Bookmark not found"
+        cursor.execute(
+            """
+            DELETE FROM bookmarks
+            WHERE id = %s
+            RETURNING id
+            """,
+            (bookmark_id,)
         )
 
-    db.commit()
+        deleted = cursor.fetchone()
 
-    cursor.close()
-    db.close()
+        if not deleted:
 
-    return {
-        "message": "Bookmark deleted successfully",
-        "id": bookmark_id
-    }
+            db.rollback()
+
+            raise HTTPException(
+                status_code=404,
+                detail="Bookmark not found"
+            )
+
+        db.commit()
+
+        return {
+            "message": "Bookmark deleted successfully",
+            "id": bookmark_id
+        }
+
+    except HTTPException:
+
+        raise
+
+    except Exception as e:
+
+        db.rollback()
+
+        print("Error deleting bookmark:", e)
+
+        raise HTTPException(
+            status_code=500,
+            detail="Database error while deleting bookmark"
+        )
+
+    finally:
+
+        cursor.close()
+        db.close()
