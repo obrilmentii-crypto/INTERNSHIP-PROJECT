@@ -1,21 +1,13 @@
-const API_URL =
-    "https://bookmark-backend-pqlf.onrender.com/api/v1/bookmarks";
+const API_URL = "https://bookmark-backend-pqlf.onrender.com";
 
-const form = document.getElementById("bookmarkForm");
-const titleInput = document.getElementById("title");
-const urlInput = document.getElementById("url");
-const categoryInput = document.getElementById("category");
-
-const bookmarksContainer =
-    document.getElementById("bookmarksContainer");
-
-const message =
-    document.getElementById("message");
+const bookmarkForm = document.getElementById("bookmarkForm");
+const bookmarksList = document.getElementById("bookmarksList");
+const message = document.getElementById("message");
 
 
-// ======================================
+// ========================================
 // LOAD BOOKMARKS
-// ======================================
+// ========================================
 
 async function loadBookmarks() {
 
@@ -23,198 +15,216 @@ async function loadBookmarks() {
 
         message.textContent = "Loading bookmarks...";
 
-        const response = await fetch(API_URL);
+        const response = await fetch(
+            `${API_URL}/api/v1/bookmarks`
+        );
 
         if (!response.ok) {
             throw new Error(
-                `Server error: ${response.status}`
+                `Server returned ${response.status}`
             );
         }
 
-        const bookmarks = await response.json();
+        const data = await response.json();
 
-        displayBookmarks(bookmarks);
+        displayBookmarks(data.bookmarks);
 
         message.textContent = "";
 
     } catch (error) {
 
-        console.error("Error loading bookmarks:", error);
+        console.error("LOAD ERROR:", error);
 
         message.textContent =
             "Unable to connect to the backend.";
-
     }
 }
 
 
-// ======================================
+// ========================================
 // DISPLAY BOOKMARKS
-// ======================================
+// ========================================
 
 function displayBookmarks(bookmarks) {
 
-    bookmarksContainer.innerHTML = "";
+    bookmarksList.innerHTML = "";
 
-    if (bookmarks.length === 0) {
+    if (!bookmarks || bookmarks.length === 0) {
 
-        bookmarksContainer.innerHTML =
-            "<p>No bookmarks saved yet.</p>";
+        bookmarksList.innerHTML =
+            "<p>No bookmarks yet.</p>";
 
         return;
     }
 
     bookmarks.forEach(bookmark => {
 
-        const card = document.createElement("div");
+        const item = document.createElement("div");
 
-        card.className = "bookmark-card";
+        item.className = "bookmark";
 
-        card.innerHTML = `
+        item.innerHTML = `
             <h3>${escapeHTML(bookmark.title)}</h3>
 
             <p>
-                <a
-                    href="${escapeHTML(bookmark.url)}"
-                    target="_blank"
-                >
-                    ${escapeHTML(bookmark.url)}
-                </a>
-            </p>
-
-            <p>
-                <strong>Category:</strong>
+                Category:
                 ${escapeHTML(bookmark.category || "None")}
             </p>
 
+            <a
+                href="${escapeAttribute(bookmark.url)}"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                ${escapeHTML(bookmark.url)}
+            </a>
+
+            <br><br>
+
             <button
-                class="delete-button"
                 onclick="deleteBookmark(${bookmark.id})"
             >
                 Delete
             </button>
         `;
 
-        bookmarksContainer.appendChild(card);
-
+        bookmarksList.appendChild(item);
     });
 }
 
 
-// ======================================
+// ========================================
 // ADD BOOKMARK
-// ======================================
+// ========================================
 
-form.addEventListener("submit", async function(event) {
+bookmarkForm.addEventListener(
+    "submit",
+    async function(event) {
 
-    event.preventDefault();
+        event.preventDefault();
 
-    const title = titleInput.value.trim();
-    const url = urlInput.value.trim();
-    const category = categoryInput.value.trim();
+        const title =
+            document.getElementById("title").value.trim();
 
-    if (!title || !url) {
+        const url =
+            document.getElementById("url").value.trim();
 
-        alert("Please enter a title and URL.");
+        const category =
+            document.getElementById("category").value.trim();
 
-        return;
-    }
 
-    try {
+        if (!title || !url) {
 
-        message.textContent = "Saving bookmark...";
+            message.textContent =
+                "Title and URL are required.";
 
-        const response = await fetch(API_URL, {
-
-            method: "POST",
-
-            headers: {
-                "Content-Type": "application/json"
-            },
-
-            body: JSON.stringify({
-                title: title,
-                url: url,
-                category: category
-            })
-
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-
-            throw new Error(
-                data.detail || "Could not save bookmark"
-            );
-
+            return;
         }
 
-        console.log("Bookmark saved:", data);
 
-        message.textContent =
-            "Bookmark saved successfully!";
+        try {
 
-        // Clear the form
-        form.reset();
+            message.textContent =
+                "Saving bookmark...";
 
-        // Load bookmarks again
-        await loadBookmarks();
 
-    } catch (error) {
+            const response = await fetch(
+                `${API_URL}/api/v1/bookmarks`,
+                {
+                    method: "POST",
 
-        console.error("Error saving bookmark:", error);
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
 
-        message.textContent =
-            "Could not save bookmark.";
+                    body: JSON.stringify({
+                        title: title,
+                        url: url,
+                        category: category
+                    })
+                }
+            );
 
-        alert(error.message);
 
+            const data = await response.json();
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    data.detail || "Failed to save bookmark"
+                );
+            }
+
+
+            message.textContent =
+                "Bookmark saved successfully!";
+
+
+            bookmarkForm.reset();
+
+
+            await loadBookmarks();
+
+
+        } catch (error) {
+
+            console.error("SAVE ERROR:", error);
+
+            message.textContent =
+                "Error saving bookmark: " + error.message;
+        }
     }
+);
 
-});
 
-
-// ======================================
+// ========================================
 // DELETE BOOKMARK
-// ======================================
+// ========================================
 
 async function deleteBookmark(id) {
 
     try {
 
         const response = await fetch(
-            `${API_URL}/${id}`,
+            `${API_URL}/api/v1/bookmarks/${id}`,
             {
                 method: "DELETE"
             }
         );
 
+
         const data = await response.json();
+
 
         if (!response.ok) {
 
             throw new Error(
-                data.detail || "Could not delete bookmark"
+                data.detail || "Failed to delete bookmark"
             );
-
         }
+
+
+        message.textContent =
+            "Bookmark deleted successfully!";
+
 
         await loadBookmarks();
 
+
     } catch (error) {
 
-        console.error("Error deleting bookmark:", error);
+        console.error("DELETE ERROR:", error);
 
-        alert(error.message);
-
+        message.textContent =
+            "Error deleting bookmark: " + error.message;
     }
 }
 
 
-// ======================================
-// SECURITY
-// ======================================
+// ========================================
+// SECURITY HELPERS
+// ========================================
 
 function escapeHTML(value) {
 
@@ -226,8 +236,19 @@ function escapeHTML(value) {
 }
 
 
-// ======================================
+function escapeAttribute(value) {
+
+    return value
+        .replace(/&/g, "&amp;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+}
+
+
+// ========================================
 // START APPLICATION
-// ======================================
+// ========================================
 
 loadBookmarks();
