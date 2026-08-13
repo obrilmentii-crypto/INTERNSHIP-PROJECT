@@ -1,13 +1,11 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from dotenv import load_dotenv
 import psycopg2
 import os
 
-load_dotenv()
-
 app = FastAPI()
 
+# CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -15,13 +13,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-db = psycopg2.connect(
-    host=os.getenv("DB_HOST"),
-    port=os.getenv("DB_PORT"),
-    database=os.getenv("DB_NAME"),
-    user=os.getenv("DB_USER"),
-    password=os.getenv("DB_PASSWORD")
-)
+# PostgreSQL connection
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+if not DATABASE_URL:
+    raise Exception("DATABASE_URL environment variable is missing")
+
+db = psycopg2.connect(DATABASE_URL)
 
 print("PostgreSQL connection successful!")
 
@@ -30,6 +28,13 @@ print("PostgreSQL connection successful!")
 def home():
     return {
         "message": "Backend is connected to PostgreSQL"
+    }
+
+
+@app.get("/health")
+def health():
+    return {
+        "status": "healthy"
     }
 
 
@@ -53,7 +58,6 @@ def get_bookmarks():
     bookmarks = []
 
     for row in rows:
-
         bookmarks.append({
             "id": row[0],
             "title": row[1],
@@ -72,7 +76,6 @@ def create_bookmark(bookmark: dict):
     category = bookmark.get("category", "")
 
     if not title or not url:
-
         raise HTTPException(
             status_code=400,
             detail="Title and URL are required"
@@ -120,7 +123,6 @@ def delete_bookmark(bookmark_id: int):
     deleted = cursor.fetchone()
 
     if deleted is None:
-
         cursor.close()
 
         raise HTTPException(
