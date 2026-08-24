@@ -12,15 +12,11 @@ on:
       - master
 
 jobs:
-
-  run-automated-qa-suite:
-
+  automated-qa:
     name: Run Automated QA Suite
-
     runs-on: ubuntu-latest
 
     steps:
-
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -38,4 +34,4 @@ jobs:
       - name: Run Automated QA Suite
         working-directory: module_6/test_automation
         run: |
-          pytest -v
+          python -m pytest -v
